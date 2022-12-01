@@ -7,11 +7,3 @@ jar {
         attributes 'Main-Class': 'aoc.App'
     }
 }
-
-repositories{
-    mavenCentral()
-}
-
-dependencies {
-    testImplementation group: 'junit', name: 'junit', version : '4.13.2'
-}
