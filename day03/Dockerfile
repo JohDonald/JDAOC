@@ -4,6 +4,6 @@ COPY ./ .
 RUN gradle build
 
 FROM openjdk:8-alpine
-COPY --from=BASE /src/build/libs/day02.jar /app.jar
+COPY --from=BASE /src/build/libs/day03.jar /app.jar
 COPY input.txt .
 CMD java -jar /app.jar
