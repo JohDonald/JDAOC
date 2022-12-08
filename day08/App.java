@@ -14,7 +14,7 @@ public class App{
 			boolean[][][] hiddenAndVisited = new boolean[grid.size()][grid.get(0).length][2];
 			for (int i = 1; i < grid.size() - 1; i++){
 				for (int j = 1; j < grid.get(0).length - 1; j++){
-					if (hiddenHorizontal(i,j,grid) && hiddenVertical(i,j,grid)) dfs(i, j, grid, hiddenAndVisited);
+					if (!hiddenAndVisited[i][j][1] && hiddenHorizontal(i,j,grid) && hiddenVertical(i,j,grid)) dfs(i, j, grid, hiddenAndVisited);
 				}
 			}
 			int sumHidden = 0;
