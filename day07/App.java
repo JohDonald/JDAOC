@@ -25,7 +25,7 @@ public class App {
 				addNode(current, input.get(i));
 			}
 		}
-		dfsSizes(root);
+		propagateSizes(root);
 		return collectNodes(root);
 	}
 	public static Node changeNode(Node current, String line){
@@ -43,8 +43,8 @@ public class App {
 		}
 	}
 
-	public static void dfsSizes(Node root){
-		for (Node n : root.children) dfsSizes(n);
+	public static void propagateSizes(Node root){
+		for (Node n : root.children) propagateSizes(n);
 		if (!root.file) root.value = root.children.stream().mapToInt(no -> no.value).sum();
 	}
 
