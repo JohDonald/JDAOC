@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class App{
-
 	public static void main(String[] args) throws IOException {
 		List<char[]> grid = Files.lines(Paths.get("input.txt")).map(s -> s.toCharArray()).collect(Collectors.toList());
 		String part = System.getenv("part") == null ? "part1" : System.getenv("part");
@@ -52,40 +51,48 @@ public class App{
 	}
 
 	public static int highestScenicScore(List<char[]> grid){
-		int[][][] upLeftSight = new int[grid.size()][grid.get(0).length][2];
+		int[][][] upLeftDownRightSight = new int[grid.size()][grid.get(0).length][4];
+		for (int i = 1, y = grid.size() - 2; i < grid.size() - 1 && y > 0; i++, y--){
+			for (int j = 1, x = grid.get(0).length - 2; j < grid.get(0).length - 1 && x > 0; j++, x--){
+				viewUpDP(i, j, grid, upLeftDownRightSight); viewLeftDP(i, j, grid, upLeftDownRightSight);
+				viewDownDP(y, x, grid, upLeftDownRightSight); viewRightDP(y, x, grid, upLeftDownRightSight);
+			}
+		}
 		int max = Integer.MIN_VALUE;
 		for (int i = 1; i < grid.size() - 1; i++){
 			for (int j = 1; j < grid.get(0).length - 1; j++){
-				int scenicScore = viewUp(i, j, grid, upLeftSight) * viewLeft(i, j, grid, upLeftSight) * viewDown(i, j, grid) * viewRight(i, j, grid);
-				max = Math.max(max, scenicScore);
+				max = Math.max(max, upLeftDownRightSight[i][j][0] * upLeftDownRightSight[i][j][1] * upLeftDownRightSight[i][j][2] * upLeftDownRightSight[i][j][3]);
 			}
 		}
 		return max;
 	}
 
-	public static int viewUp(int i, int j, List<char[]> grid, int[][][] upLeftSight){
+	public static int viewUpDP(int i, int j, List<char[]> grid, int[][][] upLeftDownRightSight){
 		int u = i - 1;
-		while (u > 0 && (Character.getNumericValue(grid.get(u)[j]) < Character.getNumericValue(grid.get(i)[j]))) u -= upLeftSight[u][j][0];
-		upLeftSight[i][j][0] = i - u;
-		return upLeftSight[i][j][0];
+		while (u > 0 && (Character.getNumericValue(grid.get(u)[j]) < Character.getNumericValue(grid.get(i)[j]))) u -= upLeftDownRightSight[u][j][0];
+		upLeftDownRightSight[i][j][0] = i - u;
+		//if full length and last coordinate >= current height
+		return upLeftDownRightSight[i][j][0];
 	}
 
-	public static int viewLeft(int i, int j, List<char[]> grid, int[][][] upLeftSight){
+	public static int viewLeftDP(int i, int j, List<char[]> grid, int[][][] upLeftDownRightSight){
 		int l = j - 1;
-		while (l > 0 && (Character.getNumericValue(grid.get(i)[l]) < Character.getNumericValue(grid.get(i)[j]))) l -= upLeftSight[i][l][1];
-		upLeftSight[i][j][1] = j - l;
-		return upLeftSight[i][j][1];
+		while (l > 0 && (Character.getNumericValue(grid.get(i)[l]) < Character.getNumericValue(grid.get(i)[j]))) l -= upLeftDownRightSight[i][l][1];
+		upLeftDownRightSight[i][j][1] = j - l;
+		return upLeftDownRightSight[i][j][1];
 	}
 
-	public static int viewDown(int i, int j, List<char[]> grid){
-		int d = i + 1;
-		while(d < grid.size() - 1 && (Character.getNumericValue(grid.get(d)[j]) < Character.getNumericValue(grid.get(i)[j]))) d++;
-		return d - i;
+	public static int viewDownDP(int y, int x, List<char[]> grid, int[][][] upLeftDownRightSight){
+		int d = y + 1;
+		while( d < grid.size() - 1 && (Character.getNumericValue(grid.get(d)[x]) < Character.getNumericValue(grid.get(y)[x]))) d += upLeftDownRightSight[d][x][2];
+		upLeftDownRightSight[y][x][2] = d - y;
+		return upLeftDownRightSight[y][x][2];
 	}
 
-	public static int viewRight(int i, int j, List<char[]> grid){
-		int r = j + 1;
-		while(r < grid.get(0).length - 1 && (Character.getNumericValue(grid.get(i)[r]) < Character.getNumericValue(grid.get(i)[j]))) r++;
-		return r - j;
+	public static int viewRightDP(int y, int x, List<char[]> grid, int[][][] upLeftDownRightSight){
+		int r = x + 1;
+		while(r < grid.get(0).length - 1 && (Character.getNumericValue(grid.get(y)[r]) < Character.getNumericValue(grid.get(y)[x]))) r += upLeftDownRightSight[y][r][3];
+		upLeftDownRightSight[y][x][3] = r - x;
+		return upLeftDownRightSight[y][x][3];
 	}
 }
